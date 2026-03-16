@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceCore ERP — Vendor Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="erp-header">
+        <div class="logo">FinanceCore<span> ERP v3.2.1</span></div>
+        <div class="user-info">User: admin | Session: 8h 23m | Server: PROD-FIN-01</div>
+    </div>
+    <nav class="erp-nav">
+        <a href="index.html">Dashboard</a>
+        <a href="invoices.html">Invoices</a>
+        <a href="vendors.html" class="active">Vendors</a>
+        <a href="purchase-orders.html">Purchase Orders</a>
+        <a href="ai-copilot.html" style="color: #f0c040;">✨ AI Copilot</a>
+    </nav>
+    <div class="erp-content">
+        <div class="erp-toolbar">
+            <span class="page-title">🏢 Vendor Master</span>
+            <button class="btn btn-primary" onclick="showVendorForm()">+ New Vendor</button>
+            <button class="btn" onclick="renderVendors()">↻ Refresh</button>
+        </div>
+        <div class="erp-body">
+            <div id="vendor-alert" class="alert"></div>
+            <div class="search-bar">
+                <input type="text" id="vendor-search" placeholder="Search by Vendor Name, ID, Tax ID..." onkeyup="filterVendors()">
+                <select id="vendor-status-filter" onchange="filterVendors()">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="blocked">Blocked</option>
+                </select>
+            </div>
+            <table class="erp-table" id="vendor-table">
+                <thead>
+                    <tr>
+                        <th>Vendor ID</th>
+                        <th>Name</th>
+                        <th>Tax ID</th>
+                        <th>Status</th>
+                        <th>Payment Terms</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="vendor-tbody"></tbody>
+            </table>
+            <div class="erp-form" id="vendor-form">
+                <h3 id="vendor-form-title">Edit Vendor</h3>
+                <input type="hidden" id="edit-vendor-index">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-v-id">Vendor ID</label>
+                        <input type="text" id="edit-v-id" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-v-name">Vendor Name</label>
+                        <input type="text" id="edit-v-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-v-taxid">Tax ID (RUC/EIN)</label>
+                        <input type="text" id="edit-v-taxid">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-v-status">Status</label>
+                        <select id="edit-v-status">
+                            <option value="active">Active</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="blocked">Blocked</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-v-terms">Payment Terms</label>
+                        <input type="text" id="edit-v-terms">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-v-contact">Contact Email</label>
+                        <input type="email" id="edit-v-contact">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label for="edit-v-address">Address</label>
+                        <input type="text" id="edit-v-address">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="saveVendor()">💾 Save</button>
+                    <button class="btn" onclick="hideVendorForm()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="erp-footer">FinanceCore ERP © 2008—2026 | Module: Vendor Management v3.2.1</div>
+    </div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => renderVendors());</script>
+</body>
+</html>

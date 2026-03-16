@@ -1,0 +1,48 @@
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+nova/
+.venv/
+venv/
+env/
+
+# Local app data
+storage/
+backend/storage/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs and generated outputs
+logs/
+*.log
+out.txt
+out_clean.txt
+test_err_output*.txt
+
+# Media artifacts
+*.mp4
+*.webm
+
+# Frontend
+node_modules/
+dist/
+dist-ssr/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.suo
+*.swp
+
+# Internal tooling
+.agents/

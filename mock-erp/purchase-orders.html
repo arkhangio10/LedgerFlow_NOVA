@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceCore ERP — Purchase Orders</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="erp-header">
+        <div class="logo">FinanceCore<span> ERP v3.2.1</span></div>
+        <div class="user-info">User: admin | Session: 8h 23m | Server: PROD-FIN-01</div>
+    </div>
+    <nav class="erp-nav">
+        <a href="index.html">Dashboard</a>
+        <a href="invoices.html">Invoices</a>
+        <a href="vendors.html">Vendors</a>
+        <a href="purchase-orders.html" class="active">Purchase Orders</a>
+    </nav>
+    <div class="erp-content">
+        <div class="erp-toolbar">
+            <span class="page-title">📋 Purchase Order Lookup</span>
+            <button class="btn" onclick="renderPurchaseOrders()">↻ Refresh</button>
+        </div>
+        <div class="erp-body">
+            <div class="search-bar">
+                <input type="text" id="po-search" placeholder="Search by PO #, Vendor..." onkeyup="filterPOs()">
+            </div>
+            <table class="erp-table" id="po-table">
+                <thead>
+                    <tr>
+                        <th>PO Number</th>
+                        <th>Vendor</th>
+                        <th>Total</th>
+                        <th>Currency</th>
+                        <th>Date</th>
+                        <th>Cost Center</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="po-tbody"></tbody>
+            </table>
+            <!-- PO Detail Panel -->
+            <div class="erp-form" id="po-detail">
+                <h3 id="po-detail-title">Purchase Order Details</h3>
+                <div id="po-detail-body"></div>
+                <div class="form-actions">
+                    <button class="btn" onclick="hidePODetail()">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="erp-footer">FinanceCore ERP © 2008—2026 | Module: Procurement v3.2.1</div>
+    </div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => renderPurchaseOrders());</script>
+</body>
+</html>

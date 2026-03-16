@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LedgerFlow AI Agent Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .ai-dashboard {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 100px);
+        }
+        .upload-section {
+            flex: 1;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #b0b0b0;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+        }
+        .graph-section {
+            flex: 2;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #b0b0b0;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+            position: relative;
+            overflow-y: auto;
+        }
+        
+        /* Drag & Drop Zone */
+        .drop-zone {
+            width: 100%;
+            height: 150px;
+            border: 2px dashed #3a7bd5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #f0f7ff;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        .drop-zone:hover { background: #e0f0ff; }
+        .drop-zone p { font-size: 14px; color: #1a3a5c; font-weight: bold; }
+        
+        /* Graph Visualizer */
+        .agent-node {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .agent-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eee;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 2;
+            color: #555;
+        }
+        .agent-node.active .agent-icon { background: #ffeb3b; border-color: #fbc02d; color: #333;}
+        .agent-node.completed .agent-icon { background: #4caf50; border-color: #388e3c; color: white;}
+        .agent-node.failed .agent-icon { background: #f44336; border-color: #d32f2f; color: white;}
+        .agent-node.pending .agent-icon { background: #ff9800; border-color: #f57c00; color: white;} /* human gate */
+
+        .agent-line {
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            bottom: -20px;
+            width: 2px;
+            background: #ccc;
+            z-index: 1;
+        }
+        .agent-node:last-child .agent-line { display: none; }
+
+        .agent-details {
+            margin-left: 20px;
+            flex: 1;
+            background: #f9f9f9;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .agent-details h4 {
+            margin: 0 0 5px 0;
+            color: #1a3a5c;
+            font-size: 14px;
+        }
+        .agent-details p {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .agent-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .agent-summary {
+            background: #eef5ea;
+            border-left: 3px solid #4caf50;
+            padding: 8px;
+            font-size: 11px;
+            margin-top: 8px;
+            white-space: pre-wrap;
+        }
+
+        .human-approval-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            display: none;
+        }
+    </style>
+</head>
+<body style="background: #e8e8e8; margin: 0; font-family: 'Segoe UI', sans-serif;">
+
+    <!-- Header -->
+    <div class="erp-header">
+        <div class="logo">LedgerFlow<span> AI Agent Orchestrator</span></div>
+        <div class="user-info">Amazon Nova Hackathon Demo</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="erp-nav">
+        <a href="index.html">⬅ Back to FinanceCore ERP</a>
+        <a href="ai-copilot.html" class="active">AI Processor Run</a>
+    </nav>
+
+    <div class="ai-dashboard">
+        <!-- UPLOAD SECTION -->
+        <div class="upload-section">
+            <h2 style="font-size: 16px; color: #1a3a5c; margin-bottom: 15px;">1. Submit Document</h2>
+            <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                <p>Click or Drop PDF Invoice Here</p>
+                <span id="file-name" style="font-size: 12px; margin-top: 10px; color: #555;">No file selected</span>
+            </div>
+            <input type="file" id="file-input" style="display: none;" accept=".pdf,.png,.jpg">
+            
+            <button class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px;" onclick="startAIWorkflow()" id="btn-start">🚀 Start AI Analysis</button>
+
+            <div style="margin-top: 30px; font-size: 12px; color: #666;">
+                <b>Demo Instructions:</b>
+                <p>1. <b>Upload an Invoice</b> from the <code>mock-erp</code> folder.</p>
+                <p>2. The AI graph on the right will visualize the multi-agent reasoning and mapping.</p>
+                <p>3. Depending on the mock PDF uploaded, the AI will either accept, require review, or reject.</p>
+            </div>
+            
+            <!-- Human Gate GUI (only shown if required) -->
+            <div class="human-approval-box" id="human-box">
+                <h3 style="color: #856404; font-size: 14px; margin-bottom: 10px;">⚠️ Human Approval Required</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 10px;">The AI flagged a discrepancy. Please select an action to continue the workflow:</p>
+                <label style="font-size:11px;">Note/Reason:</label>
+                <input type="text" id="approval-note" placeholder="Enter reason..." style="width: 100%; padding: 5px; margin-bottom: 10px;">
+                <button class="btn btn-success" onclick="submitDecision('approved')">Approve Action</button>
+                <button class="btn btn-danger" onclick="submitDecision('rejected')">Reject Action</button>
+            </div>
+        </div>
+
+        <!-- GRAPH SECTION -->
+        <div class="graph-section">
+            <h2 style="font-size: 16px; color: #1a3a5c; margin-bottom: 15px;">2. Live Agent Tracing (LangGraph)</h2>
+            <div id="graph-container">
+                <p style="color:#aaa; font-style:italic; font-size:12px;">Waiting for document submission...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT FOR API COMM -->
+    <script>
+        const API_BASE = "http://localhost:8000";
+        let currentCaseId = null;
+        let pollInterval = null;
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                document.getElementById('file-name').textContent = e.target.files[0].name;
+                document.getElementById('drop-zone').style.borderColor = "#4caf50";
+                document.getElementById('drop-zone').style.background = "#eef5ea";
+            }
+        });
+
+        async function startAIWorkflow() {
+            const fileInput = document.getElementById('file-input');
+            if (!fileInput.files.length) {
+                alert("Please select a file first.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-start');
+            btn.disabled = true;
+            btn.textContent = "Processing...";
+            document.getElementById('graph-container').innerHTML = "";
+            document.getElementById('human-box').style.display = "none";
+
+            try {
+                // 1. Create Case
+                const caseRes = await fetch(`${API_BASE}/cases`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        case_type: "invoice_processing",
+                        title: `Invoice Process - ${fileInput.files[0].name}`,
+                        submitted_by: "demo_user"
+                    })
+                });
+                const caseData = await caseRes.json();
+                currentCaseId = caseData.id;
+
+                // 2. Upload File
+                const formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+                formData.append("evidence_type", "pdf");
+                await fetch(`${API_BASE}/cases/${currentCaseId}/evidence`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // 3. Start Workflow
+                await fetch(`${API_BASE}/cases/${currentCaseId}/run`, {
+                    method: 'POST'
+                });
+
+                // 4. Start polling for graph steps
+                pollInterval = setInterval(pollTrace, 1500);
+
+            } catch (err) {
+                alert("Error starting workflow: " + err);
+                btn.disabled = false;
+                btn.textContent = "🚀 Start AI Analysis";
+            }
+        }
+
+        async function pollTrace() {
+            if (!currentCaseId) return;
+            try {
+                const res = await fetch(`${API_BASE}/cases/${currentCaseId}/trace`);
+                const data = await res.json();
+                
+                renderGraph(data.steps);
+
+                if (data.case_status === 'awaiting_approval') {
+                    clearInterval(pollInterval);
+                    document.getElementById('human-box').style.display = "block";
+                    document.getElementById('btn-start').innerHTML = "⏳ Paused for Human";
+                } else if (data.case_status === 'error' || data.case_status === 'rejected' || data.case_status === 'completed' || data.case_status === 'resolved') {
+                    clearInterval(pollInterval);
+                    document.getElementById('btn-start').innerHTML = "✅ Work Flow Ended";
+                    document.getElementById('btn-start').disabled = false;
+                }
+            } catch (e) {
+                console.error("Polling error", e);
+            }
+        }
+
+        async function submitDecision(decision) {
+            const btnApprove = document.querySelector('.btn-success');
+            const btnReject = document.querySelector('.btn-danger');
+            btnApprove.disabled = true;
+            btnReject.disabled = true;
+            
+            const note = document.getElementById('approval-note').value;
+             try {
+                const response = await fetch(`${API_BASE}/cases/${currentCaseId}/approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        decision: decision,
+                        approved_by: "demo_user",
+                        decision_note: note
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errStr = await response.text();
+                    console.error("Approve API failed:", errStr);
+                    // Do not alert to prevent breaking demo flow
+                }
+
+                document.getElementById('human-box').style.display = "none";
+                document.getElementById('btn-start').innerHTML = "Resuming Workflow...";
+                
+                // Keep polling
+                pollInterval = setInterval(pollTrace, 1500);
+             } catch (err) {
+                 console.error("Error submitting decision: ", err);
+             } finally {
+                 btnApprove.disabled = false;
+                 btnReject.disabled = false;
+             }
+        }
+
+        function getAgentIcon(type) {
+            switch(type) {
+                case 'parse': return '👁️';
+                case 'retrieval': return '🔎';
+                case 'resolution': return '🧠';
+                case 'human_gate': return '👤';
+                case 'execute_ui': return '🤖';
+                case 'audit': return '✅';
+                default: return '⚙️';
+            }
+        }
+
+        function renderGraph(steps) {
+            const container = document.getElementById('graph-container');
+            container.innerHTML = "";
+            let html = "";
+
+            steps.forEach(step => {
+                let statusClass = step.status === 'completed' ? 'completed' : 
+                                  step.status === 'failed' ? 'failed' : 
+                                  step.status === 'pending' ? 'pending' : 'active';
+                                  
+                let icon = getAgentIcon(step.step_type);
+
+                html += `
+                <div class="agent-node ${statusClass}">
+                    <div class="agent-line"></div>
+                    <div class="agent-icon">${icon}</div>
+                    <div class="agent-details">
+                        <h4>${step.agent_name}</h4>
+                        <p><strong>Goal:</strong> ${step.objective}</p>
+                        <span class="agent-badge">Tool: ${step.tool_called}</span>
+                        ${step.confidence ? `<span class="agent-badge">Confidence: ${(step.confidence*100).toFixed(0)}%</span>` : ''}
+                        
+                        ${step.result_summary ? `<div class="agent-summary">${escapeHtml(step.result_summary)}</div>` : ''}
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+            // Scroll to bottom slowly
+            container.parentElement.scrollTop = container.parentElement.scrollHeight;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+         }
+    </script>
+</body>
+</html>

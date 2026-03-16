@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceCore ERP — Invoice Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="erp-header">
+        <div class="logo">FinanceCore<span> ERP v3.2.1</span></div>
+        <div class="user-info">User: admin | Session: 8h 23m | Server: PROD-FIN-01</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="erp-nav">
+        <a href="index.html">Dashboard</a>
+        <a href="invoices.html" class="active">Invoices</a>
+        <a href="vendors.html">Vendors</a>
+        <a href="purchase-orders.html">Purchase Orders</a>
+        <a href="ai-copilot.html" style="color: #f0c040;">✨ AI Copilot</a>
+    </nav>
+
+    <!-- Content -->
+    <div class="erp-content">
+        <div class="erp-toolbar">
+            <span class="page-title">📄 Invoice Management</span>
+            <button class="btn btn-primary" onclick="showInvoiceForm()">+ New Invoice</button>
+            <button class="btn" onclick="refreshInvoices()">↻ Refresh</button>
+        </div>
+        <div class="erp-body">
+            <!-- Alert Messages -->
+            <div id="invoice-alert" class="alert"></div>
+
+            <!-- Search / Filter -->
+            <div class="search-bar">
+                <input type="text" id="invoice-search" placeholder="Search by Invoice #, Vendor..." onkeyup="filterInvoices()">
+                <select id="invoice-status-filter" onchange="filterInvoices()">
+                    <option value="">All Status</option>
+                    <option value="approved">Approved</option>
+                    <option value="pending">Pending</option>
+                    <option value="flagged">Flagged</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <span style="color: #888; font-size: 11px;" id="invoice-count">Showing 8 records</span>
+            </div>
+
+            <!-- Invoice Table -->
+            <table class="erp-table" id="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Vendor</th>
+                        <th>Amount</th>
+                        <th>Tax</th>
+                        <th>Total</th>
+                        <th>PO Ref</th>
+                        <th>Date</th>
+                        <th>Cost Center</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="invoice-tbody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+
+            <!-- Edit Invoice Form -->
+            <div class="erp-form" id="invoice-form">
+                <h3 id="invoice-form-title">Edit Invoice</h3>
+                <input type="hidden" id="edit-invoice-index">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-invoice-number">Invoice Number</label>
+                        <input type="text" id="edit-invoice-number" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-vendor">Vendor</label>
+                        <input type="text" id="edit-vendor">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-vendor-id">Vendor ID</label>
+                        <input type="text" id="edit-vendor-id">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-amount">Amount (Subtotal)</label>
+                        <input type="number" id="edit-amount" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tax-rate">Tax Rate (%)</label>
+                        <input type="number" id="edit-tax-rate" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tax-amount">Tax Amount</label>
+                        <input type="number" id="edit-tax-amount" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-total">Total</label>
+                        <input type="number" id="edit-total" step="0.01">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-po-reference">PO Reference</label>
+                        <input type="text" id="edit-po-reference">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-date">Invoice Date</label>
+                        <input type="date" id="edit-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-due-date">Due Date</label>
+                        <input type="date" id="edit-due-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-cost-center">Cost Center</label>
+                        <input type="text" id="edit-cost-center">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-status">Status</label>
+                        <select id="edit-status">
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="flagged">Flagged</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-currency">Currency</label>
+                        <input type="text" id="edit-currency" value="USD">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="saveInvoice()">💾 Save</button>
+                    <button class="btn btn-success" onclick="approveInvoice()">✓ Approve</button>
+                    <button class="btn btn-warning" onclick="flagInvoice()">⚑ Flag for Review</button>
+                    <button class="btn btn-danger" onclick="rejectInvoice()">✗ Reject</button>
+                    <button class="btn" onclick="hideInvoiceForm()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="erp-footer">
+            FinanceCore ERP © 2008—2026 | Module: Accounts Payable v3.2.1 | Database: PROD-FIN-DB01
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Initialize invoice page
+        document.addEventListener('DOMContentLoaded', () => renderInvoices());
+    </script>
+</body>
+</html>

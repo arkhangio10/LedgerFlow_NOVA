@@ -1,0 +1,31 @@
+# Web framework
+fastapi==0.115.12
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# Database
+sqlalchemy[asyncio]==2.0.38
+asyncpg==0.30.0
+pgvector==0.3.6
+
+# AWS
+boto3==1.37.1
+
+# Data validation
+pydantic>=2.12,<3
+pydantic-settings>=2.13,<3
+
+# LangGraph / LangChain
+langgraph==0.3.34
+langchain-core==0.3.43
+langchain-aws==0.2.15
+
+# Nova Act
+nova-act
+playwright>=1.54,<1.57
+
+# Utilities
+python-dotenv==1.0.1
+httpx==0.28.1
+aiofiles==24.1.0
+python-jose==3.3.0

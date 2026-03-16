@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceCore ERP — Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="erp-header">
+        <div class="logo">FinanceCore<span> ERP v3.2.1</span></div>
+        <div class="user-info">User: admin | Session: 8h 23m | Server: PROD-FIN-01</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="erp-nav">
+        <a href="index.html" class="active">Dashboard</a>
+        <a href="invoices.html">Invoices</a>
+        <a href="vendors.html">Vendors</a>
+        <a href="purchase-orders.html">Purchase Orders</a>
+        <a href="ai-copilot.html" style="color: #f0c040;">✨ AI Copilot</a>
+    </nav>
+
+    <!-- Content -->
+    <div class="erp-content">
+        <div class="erp-toolbar">
+            <span class="page-title">📊 Financial Operations Dashboard</span>
+            <span style="color:#888;">Last Refresh: 2026-03-14 08:45:22 UTC</span>
+        </div>
+        <div class="erp-body">
+            <!-- Dashboard Widgets -->
+            <div class="dashboard-grid">
+                <div class="widget">
+                    <div class="widget-value" id="total-invoices">8</div>
+                    <div class="widget-label">Total Invoices</div>
+                </div>
+                <div class="widget">
+                    <div class="widget-value" id="pending-invoices" style="color: #d4a017;">4</div>
+                    <div class="widget-label">Pending Review</div>
+                </div>
+                <div class="widget">
+                    <div class="widget-value" id="approved-invoices" style="color: #2e7d32;">3</div>
+                    <div class="widget-label">Approved</div>
+                </div>
+                <div class="widget">
+                    <div class="widget-value" id="flagged-invoices" style="color: #c62828;">1</div>
+                    <div class="widget-label">Flagged</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <h3 style="color: #1a3a5c; font-size: 13px; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px;">
+                Recent Activity
+            </h3>
+            <table class="erp-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>Reference</th>
+                        <th>User</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2026-03-14 08:42:15</td>
+                        <td>Invoice Submitted</td>
+                        <td>INV-8827</td>
+                        <td>jrodriguez</td>
+                        <td><span class="status status-approved">Approved</span></td>
+                    </tr>
+                    <tr>
+                        <td>2026-03-14 08:38:40</td>
+                        <td>Invoice Flagged — Possible Duplicate</td>
+                        <td>INV-8826</td>
+                        <td>system</td>
+                        <td><span class="status status-flagged">Flagged</span></td>
+                    </tr>
+                    <tr>
+                        <td>2026-03-14 08:30:12</td>
+                        <td>PO-Invoice Match Failed — Amount Mismatch 3.4%</td>
+                        <td>INV-8821</td>
+                        <td>system</td>
+                        <td><span class="status status-pending">Pending</span></td>
+                    </tr>
+                    <tr>
+                        <td>2026-03-14 08:25:05</td>
+                        <td>Vendor Name Mismatch Detected</td>
+                        <td>INV-8822</td>
+                        <td>system</td>
+                        <td><span class="status status-pending">Pending</span></td>
+                    </tr>
+                    <tr>
+                        <td>2026-03-14 08:20:00</td>
+                        <td>Missing Cost Center — Tax Verification Failed</td>
+                        <td>INV-8823</td>
+                        <td>system</td>
+                        <td><span class="status status-error">Error</span></td>
+                    </tr>
+                    <tr>
+                        <td>2026-03-14 08:15:33</td>
+                        <td>Suspended Vendor — Invoice Blocked</td>
+                        <td>INV-8824</td>
+                        <td>system</td>
+                        <td><span class="status status-blocked">Blocked</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="erp-footer">
+            FinanceCore ERP © 2008—2026 | Module: Accounts Payable v3.2.1 | Database: PROD-FIN-DB01
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
